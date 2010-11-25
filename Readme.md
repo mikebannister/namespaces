@@ -1,6 +1,6 @@
 # namespaces #
 
-Functions for doing reading/writing/creating namespaces
+Functions for reading/writing/creating namespaces
 
 ## What for? ##
 
