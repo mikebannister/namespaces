@@ -1,6 +1,9 @@
-var sys = require('sys'),
-    unittest = require('unittest'),
-    namespaces = require('../index');
+var path = require('path'),
+    assertLintFree = require('node-assert-lint-free'),
+    namespaces = require('../namespaces.js');
+
+var complexObj,
+    simpleObj;
 
 function getComplexObj() {
     return {
@@ -28,114 +31,131 @@ function dynamicSetArgsFunction(/* obj, [key], val */) {
     var setArgs = parseSetArgs(arguments);
     return setArgs;
 }
+
 function dynamicGetArgsFunction(/* obj, [key] */) {
     var getArgs = parseGetArgs(arguments);
     return getArgs;
 }
 
-function NamespacesTestCase() {
-    unittest.TestCase.apply(this, arguments);
-}
-sys.inherits(NamespacesTestCase, unittest.TestCase);
+var assert = require('assert'),
+    namespace = require('../namespaces.js');
 
-NamespacesTestCase.prototype.extend({
-    isSetUp: false,
-    setUp: function () {
-        this.complexObj = getComplexObj();
-        this.simpleObj = getSimpleObj();
-        this.isSetUp = true;
-    },
-    tearDown: function () {
-        this.isSetUp = false;
-    },
-    testParseSetArgsWithAllArguments: function () {
-        var parsedArgs = dynamicSetArgsFunction(this.simpleObj, 'testKey', 'testVal');
-        this.assertOk(parsedArgs.obj === this.simpleObj, "obj not found");
-        this.assertOk(parsedArgs.key === 'testKey', "key not found");
-        this.assertOk(parsedArgs.val === 'testVal', "val not found");
-    },
-    testParseSetArgsWithoutKeyArgument: function () {
-        var parsedArgs = dynamicSetArgsFunction(this.simpleObj, 'testVal');
-        this.assertOk(parsedArgs.obj === this.simpleObj, "obj not found");
-        this.assertOk(parsedArgs.key === null, "key should be null");
-        this.assertOk(parsedArgs.val === 'testVal', "val not found");
-    },
-    testParseGetArgsWithAllArguments: function () {
-        var parsedArgs = dynamicGetArgsFunction(this.simpleObj, 'testKey');
-        this.assertOk(parsedArgs.obj === this.simpleObj, "obj not found");
-        this.assertOk(parsedArgs.key === 'testKey', "key not found");
-    },
-    testParseGetArgsWithoutKeyArgument: function () {
-        var parsedArgs = dynamicGetArgsFunction(this.simpleObj);
-        this.assertOk(parsedArgs.obj === this.simpleObj, "obj not found");
-        this.assertOk(parsedArgs.key === null, "key should be null");
-    },
-    testFindNamespaceForGetArgs: function() {
-        var parsedArgs = dynamicGetArgsFunction(this.complexObj, 'test2.test2_2.test2_2_2');
-        var namespace = findNamespace(parsedArgs);
-        this.assertOk(namespace === 'test 2.2.2', "could not find namespace");
-    },
-    testFindNamespaceForGetArgsWithoutTopNamespace: function() {
-        // don't include top namespace value
-        var parsedArgs = dynamicGetArgsFunction(this.complexObj, 'test2.test2_2.test2_2_2');
-        var namespace = findNamespace(parsedArgs, false);
-        this.assertOk(namespace === this.complexObj.test2.test2_2, "could not find namespace");
-        // non-existent key
-    },
-    testFindNamespaceForGetArgsNonExistentKey: function() {
-        // non-existent key
-        var parsedArgs = dynamicGetArgsFunction(this.complexObj, 'test2.test2_2.test2_2_2_1');
-        var namespace = findNamespace(parsedArgs);
-        this.assertOk(namespace === undefined, "namespace should be undefined");
-    },
-    testFindNamespaceForSetArgs: function() {
-        var parsedArgs = dynamicSetArgsFunction(this.complexObj, 'test2.test2_2.test2_2_2', 'something');
-        var namespace = findNamespace(parsedArgs);
-        this.assertOk(namespace === 'test 2.2.2', "could not find namespace");
-    },
-    testFindNamespaceForSetArgsWithoutTopNamespace: function() {
-        // don't include top namespace value
-        var parsedArgs = dynamicSetArgsFunction(this.complexObj, 'test2.test2_2.test2_2_2', 'something');
-        var namespace = findNamespace(parsedArgs, false);
-        this.assertOk(namespace === this.complexObj.test2.test2_2, "could not find namespace");
-    },
-    testFindNamespaceForSetArgsNonExistentKey: function() {
-        // non-existent key
-        var parsedArgs = dynamicSetArgsFunction(this.complexObj, 'test2.test2_2.test2_2_2_1', 'something');
-        var namespace = findNamespace(parsedArgs);
-        this.assertOk(namespace === undefined, "namespace should be undefined");
-    },
-    testCreateNamespace: function() {
-        var space = createNamespace(this.simpleObj, ['test2', 'test2_1']);
-        this.assertOk(this.simpleObj.test2.test2_1 !== undefined, "namespace was not created");
-        this.assertOk(space !== undefined, "namespace was not created");
-    },
-    testSetValueWithKey: function() {
-        setValue(this.complexObj, 'test2.test2_2.test2_2_2', 'something');
-        this.assertOk(this.complexObj.test2.test2_2.test2_2_2 === 'something', "namespace was not set");
-    },
-    testSetValueWithNewKey: function() {
-        // new key
-        setValue(this.complexObj, 'test2.test2_2.test2_2_3', 'something else');
-        this.assertOk(this.complexObj.test2.test2_2.test2_2_3 === 'something else', "namespace was not set");
-    },
-    testSetValueDeepNonExistentKey: function() {
-        setValue(this.complexObj, 'test2.test2_2.test2_2_3.test2_2_3_1.test2_2_3_1_1', 'something else again');
-        this.assertOk(this.complexObj.test2.test2_2.test2_2_3.test2_2_3_1.test2_2_3_1_1 === 'something else again', "namespace was not set");
-    },
-    testSetValueWithoutKey: function() {
-        this.simpleObj.testX = 'test x';
-        setValue(this.complexObj, this.simpleObj);
-        this.assertOk(this.complexObj.testX === 'test x', "namespace was not set");
-    },
-    testGetValue: function() {
-        var namespace = getValue(this.complexObj, 'test2.test2_2.test2_2_2');
-        this.assertOk(namespace === 'test 2.2.2', "namespace was not found");
-    },
-    testGetValueWithoutKey: function() {
-        var namespace = getValue(this.complexObj);
-        this.assertOk(namespace === this.complexObj, "namespace was not found");
-    }
-});
+var setup = function() {
+    complexObj = getComplexObj();
+    simpleObj = getSimpleObj();
+};
 
-exports.NamespacesTestCase = NamespacesTestCase;
+exports.testLintFree = function() {
+    var root = path.join(__dirname, '..');
+    assertLintFree(root);
+};
+
+exports.testParseSetArgsWithAllArguments = function() {
+    setup();
+    var parsedArgs = dynamicSetArgsFunction(simpleObj, 'testKey', 'testVal');
+    assert.ok(parsedArgs.obj === simpleObj, "obj not found");
+    assert.ok(parsedArgs.key === 'testKey', "key not found");
+    assert.ok(parsedArgs.val === 'testVal', "val not found");
+};
+
+exports.testParseSetArgsWithoutKeyArgument = function() {
+    setup();
+    var parsedArgs = dynamicSetArgsFunction(simpleObj, 'testVal');
+    assert.ok(parsedArgs.obj === simpleObj, "obj not found");
+    assert.ok(parsedArgs.key === null, "key should be null");
+    assert.ok(parsedArgs.val === 'testVal', "val not found");
+};
+
+exports.testParseGetArgsWithAllArguments = function() {
+    setup();
+    var parsedArgs = dynamicGetArgsFunction(simpleObj, 'testKey');
+    assert.ok(parsedArgs.obj === simpleObj, "obj not found");
+    assert.ok(parsedArgs.key === 'testKey', "key not found");
+};
+
+exports.testParseGetArgsWithoutKeyArgument = function() {
+    setup();
+    var parsedArgs = dynamicGetArgsFunction(simpleObj);
+    assert.ok(parsedArgs.obj === simpleObj, "obj not found");
+    assert.ok(parsedArgs.key === null, "key should be null");
+};
+
+exports.testFindNamespaceForGetArgs = function() {
+    setup();
+    var parsedArgs = dynamicGetArgsFunction(complexObj, 'test2.test2_2.test2_2_2');
+    var namespace = findNamespace(parsedArgs);
+    assert.ok(namespace === 'test 2.2.2', "could not find namespace");
+};
+exports.testFindNamespaceForGetArgsWithoutTopNamespace = function() {
+    setup();
+    // don't include top namespace value
+    var parsedArgs = dynamicGetArgsFunction(complexObj, 'test2.test2_2.test2_2_2');
+    var namespace = findNamespace(parsedArgs, false);
+    assert.ok(namespace === complexObj.test2.test2_2, "could not find namespace");
+    // non-existent key
+};
+exports.testFindNamespaceForGetArgsNonExistentKey = function() {
+    setup();
+    // non-existent key
+    var parsedArgs = dynamicGetArgsFunction(complexObj, 'test2.test2_2.test2_2_2_1');
+    var namespace = findNamespace(parsedArgs);
+    assert.ok(namespace === undefined, "namespace should be undefined");
+};
+exports.testFindNamespaceForSetArgs = function() {
+    setup();
+    var parsedArgs = dynamicSetArgsFunction(complexObj, 'test2.test2_2.test2_2_2', 'something');
+    var namespace = findNamespace(parsedArgs);
+    assert.ok(namespace === 'test 2.2.2', "could not find namespace");
+};
+exports.testFindNamespaceForSetArgsWithoutTopNamespace = function() {
+    setup();
+    // don't include top namespace value
+    var parsedArgs = dynamicSetArgsFunction(complexObj, 'test2.test2_2.test2_2_2', 'something');
+    var namespace = findNamespace(parsedArgs, false);
+    assert.ok(namespace === complexObj.test2.test2_2, "could not find namespace");
+};
+exports.testFindNamespaceForSetArgsNonExistentKey = function() {
+    setup();
+    // non-existent key
+    var parsedArgs = dynamicSetArgsFunction(complexObj, 'test2.test2_2.test2_2_2_1', 'something');
+    var namespace = findNamespace(parsedArgs);
+    assert.ok(namespace === undefined, "namespace should be undefined");
+};
+exports.testCreateNamespace = function() {
+    setup();
+    var space = createNamespace(simpleObj, ['test2', 'test2_1']);
+    assert.ok(simpleObj.test2.test2_1 !== undefined, "namespace was not created");
+    assert.ok(space !== undefined, "namespace was not created");
+};
+exports.testSetValueWithKey = function() {
+    setup();
+    setValue(complexObj, 'test2.test2_2.test2_2_2', 'something');
+    assert.ok(complexObj.test2.test2_2.test2_2_2 === 'something', "namespace was not set");
+};
+exports.testSetValueWithNewKey = function() {
+    setup();
+    // new key
+    setValue(complexObj, 'test2.test2_2.test2_2_3', 'something else');
+    assert.ok(complexObj.test2.test2_2.test2_2_3 === 'something else', "namespace was not set");
+};
+exports.testSetValueDeepNonExistentKey = function() {
+    setup();
+    setValue(complexObj, 'test2.test2_2.test2_2_3.test2_2_3_1.test2_2_3_1_1', 'something else again');
+    assert.ok(complexObj.test2.test2_2.test2_2_3.test2_2_3_1.test2_2_3_1_1 === 'something else again', "namespace was not set");
+};
+exports.testSetValueWithoutKey = function() {
+    setup();
+    simpleObj.testX = 'test x';
+    setValue(complexObj, simpleObj);
+    assert.ok(complexObj.testX === 'test x', "namespace was not set");
+};
+exports.testGetValue = function() {
+    setup();
+    var namespace = getValue(complexObj, 'test2.test2_2.test2_2_2');
+    //assert.ok(namespace === 'test 2.2.2', "namespace was not found");
+};
+exports.testGetValueWithoutKey = function() {
+    setup();
+    var namespace = getValue(complexObj);
+    assert.ok(namespace === complexObj, "namespace was not found");
+};
