@@ -1,5 +1,3 @@
-require.paths.unshift(__dirname + '/../lib');
-
 var path = require('path'),
     assert = require('assert'),
     assertLintFree = require('node-assert-lint-free'),
@@ -46,7 +44,7 @@ var setup = function() {
 };
 
 exports.testLintFree = function() {
-    var root = path.join(__dirname, '..');
+    var root = path.join(__dirname, '../lib');
     assertLintFree(root);
 };
 
