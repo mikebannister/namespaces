@@ -1,4 +1,5 @@
 var path = require('path'),
+    assert = require('assert'),
     assertLintFree = require('node-assert-lint-free'),
     namespaces = require('../namespaces.js');
 
@@ -36,9 +37,6 @@ function dynamicGetArgsFunction(/* obj, [key] */) {
     var getArgs = parseGetArgs(arguments);
     return getArgs;
 }
-
-var assert = require('assert'),
-    namespace = require('../namespaces.js');
 
 var setup = function() {
     complexObj = getComplexObj();
