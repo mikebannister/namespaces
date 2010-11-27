@@ -4,5 +4,6 @@
     "version": "0.0.3",
     "author": "Mike Bannister <mike@webpossibilities.net>",
     "engine": [ "node >= 0.2.4"],
-    "main": "index.js"
+    "directories": { "lib": "./lib" },
+    "main": "namespaces.js"
 }

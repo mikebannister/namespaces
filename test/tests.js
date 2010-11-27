@@ -1,8 +1,9 @@
+require.paths.unshift(__dirname + '/../lib');
+
 var path = require('path'),
     assert = require('assert'),
     assertLintFree = require('node-assert-lint-free'),
-    path = require('path'),
-    namespaces = require('../namespaces.js');
+    namespaces = require('namespaces');
 
 var complexObj,
     simpleObj;
