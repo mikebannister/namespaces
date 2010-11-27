@@ -7,18 +7,14 @@ var emptyObj,
     simpleObj,
     complexObj;
 
-function getEmptyObj() {
-    return {};
-}
+var setup = function() {
+    emptyObj = {};
 
-function getSimpleObj() {
-    return {
+    simpleObj = {
         test: 'test'
     };
-}
 
-function getComplexObj() {
-    return {
+    complexObj = {
         test: 'test',
         test2: {
             test2_1: 'test 2.1',
@@ -31,7 +27,7 @@ function getComplexObj() {
             test3_1: 'test 3.1'
         }
     };
-}
+};
 
 function dynamicSetArgsFunction(/* obj, [key], val */) {
     var setArgs = parseSetArgs(arguments);
@@ -42,12 +38,6 @@ function dynamicGetArgsFunction(/* obj, [key] */) {
     var getArgs = parseGetArgs(arguments);
     return getArgs;
 }
-
-var setup = function() {
-    emptyObj = getEmptyObj();
-    simpleObj = getSimpleObj();
-    complexObj = getComplexObj();
-};
 
 exports.testLintFree = function() {
     var root = path.join(__dirname, '../lib');
