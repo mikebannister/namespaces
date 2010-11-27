@@ -1,6 +1,7 @@
 var path = require('path'),
     assert = require('assert'),
     assertLintFree = require('node-assert-lint-free'),
+    path = require('path'),
     namespaces = require('../namespaces.js');
 
 var complexObj,
