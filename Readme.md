@@ -6,4 +6,4 @@ Functions for reading/writing/creating namespaces
 
 I wrote these functions for writing higher level functions that read or write an object's attributes all in one motion. For example:
 
-    setProfile('milestone.profileComplete', true);
+    setProfile('milestone.coolnessAchieved', true);
