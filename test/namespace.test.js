@@ -16,7 +16,6 @@ function dynamicGetArgsFunction(/* obj, [key] */) {
 }
 
 var tests = testCase({
-
     setUp: function (fn) {
         this.emptyObj = {};
 
@@ -39,14 +38,12 @@ var tests = testCase({
         };
         fn();
     },
-
     'lint free': function(test) {
         var root = path.join(__dirname, '../lib');
         assertLintFree(root);
         test.ok(true);
         test.done();
     },
-
     'parse set args with all arguments': function(test) {
         test.expect(3);
         var parsedArgs = dynamicSetArgsFunction(this.simpleObj, 'testKey', 'testVal');
@@ -55,16 +52,6 @@ var tests = testCase({
         test.ok(parsedArgs.val === 'testVal', "val not found");
         test.done();
     },
-    
-    'parse set args with all arguments': function(test) {
-        test.expect(3);
-        var parsedArgs = dynamicSetArgsFunction(this.simpleObj, 'testKey', 'testVal');
-        test.ok(parsedArgs.obj === this.simpleObj, "obj not found");
-        test.ok(parsedArgs.key === 'testKey', "key not found");
-        test.ok(parsedArgs.val === 'testVal', "val not found");
-        test.done();
-    },
-    
     'parse set args wthout key argument': function(test) {
         test.expect(3);
         var parsedArgs = dynamicSetArgsFunction(this.simpleObj, 'testVal');
