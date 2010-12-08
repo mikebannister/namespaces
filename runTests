@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+require.paths.unshift(__dirname + '/dep/m1test/dep');
+require.paths.unshift(__dirname + '/dep/m1test/lib/m1test');
+
+var fs = require('fs');
+var underscore = require('underscore');
+var strings = require('underscore.strings');
+
+var getTestFiles = function() {
+    var root = __dirname + '/test';
+    var dirList = fs.readdirSync(root);
+    var files = [];
+    _(dirList).each(function(file) {
+        if (_.contains(file, 'test') && _.endsWith(file, '.js')) {
+            files.push(root + '/' + file);
+        }
+    });
+    return files;
+};
+var m1test = require('m1test');
+try {
+    
+}
+catch(e) {
+    var sys = require('sys');
+    sys.puts("Cannot find m1test submodule.");
+    sys.puts("To add the them do this:");
+    sys.puts("");
+    sys.puts("    git submodule init");
+    sys.puts("    git submodule update");
+    sys.puts("");
+    process.exit();
+}
+
+var files = getTestFiles();
+var runner = new TestRunner(files);

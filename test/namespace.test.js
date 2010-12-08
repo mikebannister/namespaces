@@ -17,7 +17,7 @@ function dynamicGetArgsFunction(/* obj, [key] */) {
 
 var emptyObj, simpleObj, complexObj;
 
-var tests = {
+var namespaceTests = {
     before: function (fn) {
         emptyObj = {};
 
@@ -157,4 +157,4 @@ var tests = {
     }
 };
 
-module.exports = tests;
+module.exports = namespaceTests;
