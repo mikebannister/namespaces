@@ -7,7 +7,7 @@ var fs = require('fs');
 var underscore = require('underscore');
 var strings = require('underscore.strings');
 
-var getTestFiles = function() {
+var files = function() {
     var root = __dirname + '/test';
     var dirList = fs.readdirSync(root);
     var files = [];
@@ -17,10 +17,10 @@ var getTestFiles = function() {
         }
     });
     return files;
-};
-var m1test = require('m1test');
+}();
+
 try {
-    
+    var m1test = require('m1test');
 }
 catch(e) {
     var sys = require('sys');
@@ -33,5 +33,4 @@ catch(e) {
     process.exit();
 }
 
-var files = getTestFiles();
 var runner = new TestRunner(files);
