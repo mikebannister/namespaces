@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 require.paths.unshift(__dirname + '/dep/m1test/dep');
-require.paths.unshift(__dirname + '/dep/m1test/lib/m1test');
+require.paths.unshift(__dirname + '/dep/m1test/lib');
 
 var fs = require('fs');
 var underscore = require('underscore');
