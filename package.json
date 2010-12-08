@@ -1,9 +1,9 @@
 {
     "name": "namespaces",
     "description": "Functions for reading/writing/creating namespaces",
-    "version": "0.0.4",
-    "author": "Mike Bannister <mike@webpossibilities.net>",
+    "version": "0.0.5",
+    "author": "Mike Bannister <mike@mike101.net>",
     "engine": [ "node >= 0.2.4"],
-    "directories": { "lib": "./lib" },
-    "main": "lib/index.js"
+    "directories": { "lib": "./lib/namespaces" },
+    "main": "lib/namespaces/index.js"
 }
