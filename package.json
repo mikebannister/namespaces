@@ -1,7 +1,7 @@
 {
     "name": "namespaces",
     "description": "Functions for reading/writing/creating namespaces",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "author": "Mike Bannister <mike@mike101.net>",
     "engine": [ "node >= 0.2.4"],
     "directories": { "lib": "./lib/namespaces" },
